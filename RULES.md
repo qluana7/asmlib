@@ -29,7 +29,7 @@ func:
     ret
 ```
 
-2. Add pesudo code (similar to C/C++) in lines.
+2. Add pseudo code (similar to C/C++) in lines.
    - Include pseudocode (similar to C/C++) alongside your assembly code for clarity.
    - Example : [Stack.asm](https://github.com/qluana7/asmlib/blob/main/data_structure/stack.asm)
 
