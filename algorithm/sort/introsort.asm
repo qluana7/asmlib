@@ -555,3 +555,31 @@ sort:
 
     leave
     ret
+
+; Example of cmp_func
+; Similar to the compare function used by qsort.
+; a <  b -> -1
+; a == b ->  0
+; a >  b ->  1
+; 'element_size' may be unnecessary depending on the implementation.
+; cmp_func(const void* a, const void* b, int element_size) -> int
+cmp_func:
+    push ebp
+    mov ebp, esp
+
+    ; eax = *(const int*)a, edx = *(const int*)b;
+    mov eax, [ebp+8]
+    mov eax, [eax]
+    mov edx, [ebp+12]
+    mov edx, [edx]
+
+    ; return (eax > edx) - (eax < edx)
+    cmp eax, edx
+    setg al
+    setl ah
+
+    sub al, ah
+    movsx eax, al
+
+    pop ebp
+    ret
