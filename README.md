@@ -14,40 +14,32 @@
 - **Linking with GCC**: Designed with the assumption that linking will be performed using GCC.
 </br>
 
-## Rule of Repository
-The assembly code you upload should adhere to the following rules:
+## How to use
+Copy the entire source from the file and paste it into your code. The `extern` part indicates the dependency functions required by the implementation. If there are `global` directives, ensure to utilize the functions associated with those directives; functions not designated as `global` in this case should be considered private. If there are no `global` directives, all functions will be considered public.
 
-1. File Format
 ```nasm
-; If there are private functions, use the global directive.
-global ...
+; Do not use the global directive for functions, as it is only intended to mark them as public.
+; Example: global func (do not use this)
 
-; Declare any external glibc functions required by your code.
+; Declare the main function as global
+global main
+
+; Declare extern functions required by the copied code from the repository
+extern ...
+; Additional extern dependencies
 extern ...
 
-; Write your code below. The following is an example.
-
-; Define your function prototype in the following format:
-; func(int a, int b) -> int*
-
-; If the function returns void, use the following format:
-; func(int a, int b)
+; Function implementation from the copied repository code
 func:
-    push ebp
-    mov ebp, esp
+    ...
 
-    ; Function body goes here
-
-    leave
-    ret
+; Main code execution
+main:
+    ...
 ```
 
-2. Add pesudo code (similar to C/C++) in lines.
-- Include pseudocode (similar to C/C++) alongside your assembly code for clarity.
-- Example : [Stack.asm](https://github.com/qluana7/asmlib/blob/main/data_structure/stack.asm)
-
-3. Classify folders well.<br/>
-<br/>
+## Contribute
+Please submit a pull request while adhering to the rules outlined in the [RULES.md](https://github.com/qluana7/asmlib/blob/main/RULES.md)
 
 ## Collaborator
 <img title="ku7431" src="https://avatars.githubusercontent.com/u/75860187" width=16 height=16> ku7431
