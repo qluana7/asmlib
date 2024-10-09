@@ -3,6 +3,9 @@ The assembly code you upload should adhere to the following rules:
 
 1. File Format
 ```nasm
+; Write comments about the dependencies of the file.
+extern ... ; Name of the file or link.
+
 ; If there are private functions, use the global directive.
 global ...
 
@@ -27,8 +30,12 @@ func:
 ```
 
 2. Add pesudo code (similar to C/C++) in lines.
-- Include pseudocode (similar to C/C++) alongside your assembly code for clarity.
-- Example : [Stack.asm](https://github.com/qluana7/asmlib/blob/main/data_structure/stack.asm)
+   - Include pseudocode (similar to C/C++) alongside your assembly code for clarity.
+   - Example : [Stack.asm](https://github.com/qluana7/asmlib/blob/main/data_structure/stack.asm)
 
-3. Classify folders well.<br/>
+3. Do not use label as branch. (* All labels are treated as functions.)
+   - Instead, use the format `jmp function+address`.
+   - For example: `jmp func+0x40`.
+
+5. Classify folders well.<br/>
 <br/>
