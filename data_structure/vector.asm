@@ -75,6 +75,7 @@ vector_constructor:
     leave
     ret
 
+; Do not call manually. private method of vector class.
 ; vector_upsize(vector* this)
 vector_upsize:
     push ebp
@@ -151,6 +152,8 @@ vector_resize:
     pop ebp
     ret
 
+; * This method is same as C++ vector::operator[], not C++ vector::at.
+;   It returns pointer of data.
 ; vector_at(vector* this, int index) -> void* pos
 vector_at:
     push ebp
