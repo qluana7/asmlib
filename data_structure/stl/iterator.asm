@@ -30,7 +30,7 @@ iterator_constructor:
     pop ebp
     ret
 
-; iterator_inc(iterator* iter)
+; iterator_inc(iterator* this)
 iterator_inc:
     push ebp
     mov ebp, esp
@@ -42,7 +42,7 @@ iterator_inc:
     pop ebp
     ret
 
-; iterator_dec(iterator* iter)
+; iterator_dec(iterator* this)
 iterator_dec:
     push ebp
     mov ebp, esp
@@ -54,7 +54,7 @@ iterator_dec:
     pop ebp
     ret
 
-; iterator_value(iterator* iter)
+; iterator_value(iterator* this)
 iterator_value:
     push ebp
     mov ebp, esp
@@ -65,7 +65,7 @@ iterator_value:
     pop ebp
     ret
 
-; iterator_add(iterator* iter, int v)
+; iterator_add(iterator* this, int v)
 iterator_add:
     push ebp
     mov ebp, esp
@@ -80,7 +80,7 @@ iterator_add:
     pop ebp
     ret
 
-; iterator_sub(iterator* iter, int v)
+; iterator_sub(iterator* this, int v)
 iterator_sub:
     push ebp
     mov ebp, esp
@@ -111,7 +111,7 @@ iterator_equal:
     pop ebp
     ret
 
-; iterator_free(iterator* iter)
+; iterator_free(iterator* this)
 iterator_free:
     push ebp
     mov ebp, esp
