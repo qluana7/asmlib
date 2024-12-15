@@ -6,7 +6,7 @@ The assembly code you upload should adhere to the following rules:
 ; Write comments about the dependencies of the file.
 extern ... ; Name of the file or link.
 
-; If there are private functions, use the global directive.
+; If there are private functions, use the global directive for public functions.
 global ...
 
 ; Declare any external glibc functions required by your code.
