@@ -22,6 +22,18 @@ max:
     pop ebp
     ret
 
+; Q. why function name is '_abs'?
+; A. 'abs' is keyword for nasm.
+; _abs(int x [as eax]) -> int
+_abs:
+    ; y = x >> 31;
+    ; return (x ^ y) - y;
+    mov edx, eax
+    sar edx, 31
+    xor eax, edx
+    sub eax, edx
+    ret
+
 ; gcd(int a, int b) -> int
 gcd:
     push ebp
