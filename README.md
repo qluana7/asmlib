@@ -29,6 +29,14 @@ extern ...
 ; Additional extern dependencies
 extern ...
 
+; Declare global variables required by some functions.
+section .data
+    var1: dd 0
+    str1: db "Hello, World!", 0
+
+; Text section directive. This appears when file has data section variables.
+section .text
+
 ; Add any required functions from the copied code here
 dependency_func:
     ...
