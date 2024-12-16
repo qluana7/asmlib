@@ -1,4 +1,3 @@
-global miller_rabin
 global isprime
 
 extern __muldi3
