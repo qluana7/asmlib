@@ -6,33 +6,46 @@ extern memcpy
 
 ; swap(void* a, void* b, int size)
 swap:
+    lea ecx, [esp+4]
+    and esp, -16
+    push dword [ecx-4]
     push ebp
     mov ebp, esp
+    push ecx
     ; void* tmp(size);
-    sub esp, [ebp+16]
+    sub esp, 4
+    mov eax, [ecx+8]
+    add eax, 15
+    and eax, -16
+    sub esp, eax
 
     ; *tmp = *a;
-    push dword [ebp+16]
-    push dword [ebp+8]
-    lea edx, [esp+8]
+    lea edx, [esp]
+    sub esp, 4
+    push dword [ecx+8]
+    push dword [ecx]
     push edx
     call memcpy
     add esp, 8
 
     ; *a = *b;
-    push dword [ebp+12]
-    push dword [ebp+8]
+    mov ecx, [ebp-4]
+    push dword [ecx+4]
+    push dword [ecx]
     call memcpy
     add esp, 8
 
     ; *b = *tmp;
-    lea edx, [esp+4]
+    lea edx, [esp+8]
     push edx
-    push dword [ebp+12]
+    mov ecx, [ebp-4]
+    push dword [ecx+4]
     call memcpy
-    add esp, 12
+    add esp, 16
 
+    mov ecx, [ebp-4]
     leave
+    lea esp, [ecx-4]
     ret
 
 ; mk_heap(void* arr, int element_size, int left, int right, cmp_func)
