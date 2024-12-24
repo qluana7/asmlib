@@ -1,4 +1,4 @@
-extern iterator_constructor ; asmlib/data_structure/stl/iterator.asm
+extern iterator_constructor ; asmlib/utility/iterator.asm
 
 global vector_constructor
 global vector_resize
