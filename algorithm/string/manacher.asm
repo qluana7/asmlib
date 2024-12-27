@@ -1,156 +1,186 @@
-; min(a, b)
-min:
+extern aligned_alloc
+extern memset
+extern free
+
+; ret capacity can be calculate as `ret_size + 3 & -4`
+; manacher_i(int* arr, int size) -> eax(int* ret):edx(int ret_size)
+manacher_i:
+    lea ecx, [esp+4]
+    and esp, -16
+    push dword [ecx-4]
     push ebp
     mov ebp, esp
+    push ecx
+    ; variable start = [ebp-8], max depth = [ebp-40]
+    ; [ebp-12] = int* arr, [ebp-16] = int r, [ebp-20] = int t, [ebp-24] = int n
+    ; [ebp-28] = int i, [ebp-32] = int* ret, [ebp-36] = int ret_size
+    sub esp, 4+4*8
 
-    mov eax, [ebp+8]
-    cmp eax, [ebp+12]
-    cmovg eax, [ebp+12]
+    ; n = size * 2 + 1;
+    mov eax, [ecx+4]
+    add eax, eax
+    inc eax
+    mov [ebp-24], eax
 
-    pop ebp
-    ret
+    ; arr = aligned_alloc(16, sizeof(int) * (n + 3 & -4));
+    sub esp, 8
+    add eax, 3
+    and eax, -4
+    shl eax, 2
+    push eax
+    push dword 16
+    call aligned_alloc
+    add esp, 16
+    mov [ebp-12], eax
 
-; manacher(int*, int, char*)
-manacher:
-    push ebp
-    mov ebp, esp
-    ; [ebp-4] = char* s, [ebp-8] = int r, [ebp-12] = int t
-    sub esp, 12
+    ; memset(arr, -1, sizeof(int) * n);
+    sub esp, 4
+    mov eax, [ebp-24]
+    shl eax, 2
+    push eax
+    push dword -1
+    push dword [ebp-12]
+    call memset
+    add esp, 16
 
-    ; s = malloc(n * sizeof(char))
-    push dword [ebp+12]
-    call malloc
-    add esp, 4
-    mov [ebp-4], eax
+    ; r = [para] size;
+    mov ecx, [ebp-4]
+    mov eax, [ecx+4]
+    mov [ebp-16], eax
 
-    ; fill(s, n, '#');
-    mov ecx, [ebp+12]
-    mov edi, eax
-    mov al, '#'
-    rep stosb
+    ; t = [para] arr;
+    mov edx, [ecx]
+    mov [ebp-20], edx
 
-    ; esi = s + 1; edi = para[char*];
-    mov esi, [ebp-4]
-    inc esi
-    mov edi, [ebp+16]
+    ; for (int i = 0; i < r; i++)
+    mov dword [ebp-28], 0
+    jmp $+0x17
 
-    ; while (n --> 0)
-    mov ecx, [ebp+12]
-    dec ecx
-    shr ecx, 1
+    ; arr[i * 2 + 1] = t[i];
+    mov edx, [ebp-20]
+    mov ecx, [ebp-28]
+    mov eax, [edx+ecx*4]
+    mov edx, [ebp-12]
+    add ecx, ecx
+    inc ecx
+    mov [edx+ecx*4], eax
 
-manacher_while1:
-    ; *esi = *edi; esi += 2; edi++;
-    mov al, [edi]
-    mov [esi], al
+    inc dword [ebp-28]
 
-    add esi, 2
-    inc edi
+    mov eax, [ebp-28]
+    cmp eax, [ebp-16]
+    jl $-0x1b
 
-    loop manacher_while1
+    ; r = t = 0;
+    mov dword [ebp-16], 0
+    mov dword [ebp-20], 0
 
-    ; r = 0, t = 0;
-    mov dword [ebp-8], 0
-    mov dword [ebp-12], 0
+    ; ret_size = n;
+    mov eax, [ebp-24]
+    mov [ebp-36], eax
+
+    ; ret = aligned_alloc(16, sizeof(int) * (ret_size + 3 & -4));
+    sub esp, 8
+    add eax, 3
+    and eax, -4
+    shl eax, 2
+    push eax
+    push dword 16
+    call aligned_alloc
+    add esp, 16
+    mov [ebp-32], eax
 
     ; for (int i = 0; i < n; i++)
+    mov dword [ebp-28], 0
+    jmp $+0x85
+
+    ; ret[i] = i <= r ? min(ret[(t << 1) - i], r - i) : 0;
+    ; // eax = min(ret[(t << 1) - i], r - i);
+    mov edx, [ebp-32]
+    mov ecx, [ebp-20]
+    add ecx, ecx
+    sub ecx, [ebp-28]
+    mov eax, [edx+ecx*4]
+    mov edx, [ebp-16]
+    sub edx, [ebp-28]
+    cmp eax, edx
+    cmovg eax, edx
+
+    ; // ret[i] = i <= r ? eax : 0;
     mov ecx, 0
-
-manacher_for1_cmp:
-    cmp ecx, [ebp+12]
-    jl manacher_for1
-
-    jmp manacher_for1_end
-
-manacher_for1:
-    mov eax, 0
-    ; if (i <= r)
-    cmp ecx, [ebp-8]
-    jg manacher_if1_end
-
-    ; eax = min(v[(t << 1) - i], r - i);
-    mov eax, [ebp-12]
-    shl eax, 1
-    sub eax, ecx
-    mov edx, [ebp+8]
-    shl eax, 2
-    add edx, eax
-    mov edx, [edx]
-
-    mov eax, [ebp-8]
-    sub eax, ecx
-
-    push edx
-    push eax
-    call min
-    add esp, 8
-
-manacher_if1_end:
-    ; v[i] = eax
-    mov edx, [ebp+8]
-    mov ebx, ecx
-    shl ebx, 2
-    add edx, ebx
-    mov [edx], eax
+    mov edx, [ebp-28]
+    cmp edx, [ebp-16]
+    cmovg eax, ecx
+    mov edx, [ebp-32]
+    mov ecx, [ebp-28]
+    mov [edx+ecx*4], eax
 
     ; while (
-manacher_while2:
-    ; edx = v[i];
-    mov edx, [ebp+8]
-    mov eax, ecx
-    shl eax, 2
-    add edx, eax
+    ;     i - ret[i] - 1 >= 0 &&
+    ;     i + ret[i] + 1 < n &&
+    ;     s[i - ret[i] - 1] == s[i + ret[i] + 1]
+    ; ) ret[i]++;
+    jmp $+0xb
 
-    ;   i - v[i] - 1 >= 0 &&
-    mov eax, ecx
-    sub eax, [edx]
+    ; // ret[i]++;
+    mov edx, [ebp-32]
+    mov ecx, [ebp-28]
+    inc dword [edx+ecx*4]
+
+    ; // i - ret[i] - 1 >= 0
+    mov eax, [ebp-28]
+    mov edx, [ebp-32]
+    sub eax, [edx+eax*4]
     dec eax
-    cmp eax, 0
-    jl manacher_while2_end
+    jl $+0x21
+    mov [ebp-40], eax
 
-    ;   i + v[i] + 1 <  n &&
-    mov ebx, ecx
-    add ebx, [edx]
-    inc ebx
-    cmp ebx, [ebp+12]
-    jge manacher_while2_end
+    ; // i + ret[i] + 1 < n
+    mov eax, [ebp-28]
+    add eax, [edx+eax*4]
+    inc eax
+    cmp eax, [ebp-24]
+    jge $+0x12
 
-    ;   s[i - v[i] - 1] == s[i + v[i] + 1]
-    mov esi, [ebp-4]
-    add esi, eax
-    mov al, [esi]
+    ; s[i - ret[i] - 1] == s[i + ret[i] + 1]
+    mov edx, [ebp-12]
+    mov ecx, eax
+    mov eax, [edx+ecx*4]
+    mov ecx,[ebp-40]
+    cmp eax, [edx+ecx*4]
+    je $-0x32
 
-    mov esi, [ebp-4]
-    add esi, ebx
-    mov bl, [esi]
+    ; if (i + ret[i] > r)
+    mov eax, [ebp-28]
+    mov edx, [ebp-32]
+    add eax, [edx+eax*4]
+    cmp eax, [ebp-16]
+    jle $+0xb
 
-    cmp al, bl
-    jne manacher_while2_end
+    ; r = i + ret[i]
+    mov [ebp-16], eax
+    
+    ; t = i;
+    mov eax, [ebp-28]
+    mov [ebp-20], eax
 
-    ; ) v[i]++;
-    inc dword [edx]
+    inc dword [ebp-28]
 
-    jmp manacher_while2
+    mov eax, [ebp-28]
+    cmp eax, [ebp-24]
+    jl $-0x86
 
-manacher_while2_end:
-    ; if (i + v[i] > r)
-    mov edx, [ebp+8]
-    mov eax, ecx
-    shl eax, 2
-    add edx, eax
-    mov edx, [edx]
-    add edx, ecx
+    ; free(arr);
+    sub esp, 12
+    push dword [ebp-12]
+    call free
+    add esp, 16
 
-    cmp edx, [ebp-8]
-    jle manacher_if2_end
+    ; return ret;
+    mov eax, [ebp-32]
+    mov edx, [ebp-36]
 
-    mov [ebp-8], edx
-    mov [ebp-12], ecx
-
-manacher_if2_end:
-    inc ecx
-    jmp manacher_for1_cmp
-
-manacher_for1_end:
+    mov ecx, [ebp-4]
     leave
+    lea esp, [ecx-4]
     ret
