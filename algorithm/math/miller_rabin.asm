@@ -1,6 +1,7 @@
 global isprime
 
 extern __muldi3
+extern __umoddi3
 
 section .data
     miller_rabin_i64a: dq 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
@@ -154,11 +155,13 @@ miller_rabin:
     ; [ebp-16] = ull d, [ebp-24] = ull t
     sub esp, 8+8*2
 
-    ; if (a == n) return true;
-    mov eax, [ebp+8]
-    mov edx, [ebp+12]
-    xor eax, [ebp+16]
-    xor edx, [ebp+20]
+    ; if (a % n == 0) return true;
+    push dword [ebp+20]
+    push dword [ebp+16]
+    push dword [ebp+12]
+    push dword [ebp+8]
+    call __umoddi3
+    add esp, 16
     or eax, edx
     setz al
     movzx eax, al
