@@ -1,3 +1,22 @@
+; mul64((unsigned) long long a, (unsigned) long long b) -> (unsigned) long long
+mul64:
+    push ebp
+    mov ebp, esp
+
+    mov eax, [ebp+12]
+    imul eax, [ebp+16]
+    mov edx, eax
+    mov eax, [ebp+20]
+    imul eax, [ebp+8]
+    lea ecx, [eax+edx]
+    mov eax, [ebp+8]
+    mul dword [ebp+16]
+    add ecx, edx
+    mov edx, ecx
+
+    leave
+    ret
+
 ; min(int a, int b) -> int
 min:
     push ebp
@@ -80,6 +99,8 @@ lcm:
     leave
     ret
 
+; /* Begin(rfinit, Require (inst)"finit") */
+
 ; log10(double x) -> double (eax:edx)
 log10:
     push ebp
@@ -152,3 +173,5 @@ logn:
     mov eax, [ebp-4]
     leave
     ret
+
+; /* End(rfinit) */
