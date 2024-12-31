@@ -40,7 +40,7 @@ queue_init:
     lea esp, [ecx-4]
     ret
 
-; queue_deinit(queue* q)
+; queue_deinit(queue* this)
 queue_deinit:
     lea ecx, [esp+4]
     and esp, -16
@@ -52,12 +52,12 @@ queue_deinit:
     ; [ebp-12] = int sz, [ebp-16] = q_node* node
     sub esp, 4+4*4
     
-    ; sz = q->size;
+    ; sz = this->size;
     mov edx, [ecx]
     mov eax, [edx+8]
     mov [ebp-12], eax
 
-    ; node = q->front;
+    ; node = this->front;
     mov eax, [edx]
     mov [ebp-16], eax
 
@@ -78,7 +78,7 @@ queue_deinit:
     cmp eax, 0
     jg $-0x1e
 
-    ; free(q);
+    ; free(this);
     sub esp, 12
     mov ecx, [ebp-4]
     push dword [ecx]
@@ -90,7 +90,7 @@ queue_deinit:
     lea esp, [ecx-4]
     ret
 
-; queue_push(queue* q, int value)
+; queue_push(queue* this, int value)
 queue_push:
     lea ecx, [esp+4]
     and esp, -16
@@ -112,23 +112,23 @@ queue_push:
     mov edx, [ecx+4]
     mov dword [eax], edx
 
-    ; if (q->size == 0)
+    ; if (this->size == 0)
     mov edx, [ecx]
     cmp dword [edx+8], 0
     jnz $+0x6
 
-    ; q->front = eax;
+    ; this->front = eax;
     mov [edx], eax
     jmp $+0x8
     
-    ; q->back->back = eax;
+    ; this->back->back = eax;
     mov ecx, [edx+4]
     mov [ecx+4], eax
 
-    ; q->back = eax;
+    ; this->back = eax;
     mov [edx+4], eax
 
-    ; q->size++;
+    ; this->size++;
     inc dword [edx+8]
 
     mov ecx, [ebp-4]
@@ -136,7 +136,7 @@ queue_push:
     lea esp, [ecx-4]
     ret
 
-; queue_pop(queue* q)
+; queue_pop(queue* this)
 queue_pop:
     lea ecx, [esp+4]
     and esp, -16
@@ -148,22 +148,22 @@ queue_pop:
     ; [ebp-12] = q_node* node
     sub esp, 4+4*4
 
-    ; if (q->size == 0) return;
+    ; if (this->size == 0) return;
     mov edx, [ecx]
     cmp dword [edx+8], 0
     jz $+0x21
 
-    ; q->size--;
+    ; this->size--;
     dec dword [edx+8]
 
-    ; node = q->front;
+    ; node = this->front;
     mov eax, [edx]
     mov [ebp-12], eax
 
-    ; if (q->size != 0)
+    ; if (this->size != 0)
     jz $+0x9
 
-    ; q->front = q->front->back;
+    ; this->front = this->front->back;
     mov ecx, [edx]
     mov eax, [ecx+4]
     mov [edx], eax
@@ -179,12 +179,12 @@ queue_pop:
     lea esp, [ecx-4]
     ret
 
-; queue_front(queue* q) -> int
+; queue_front(queue* this) -> int
 queue_front:
     push ebp
     mov ebp, esp
 
-    ; return q->front->value;
+    ; return this->front->value;
     mov edx, [ebp+8]
     mov edx, [edx]
     mov eax, [edx]
@@ -192,12 +192,12 @@ queue_front:
     leave
     ret
 
-; queue_back(queue* q) -> int
+; queue_back(queue* this) -> int
 queue_back:
     push ebp
     mov ebp, esp
 
-    ; return q->back->value;
+    ; return this->back->value;
     mov edx, [ebp+8]
     mov edx, [edx+4]
     mov eax, [edx]
@@ -205,24 +205,24 @@ queue_back:
     leave
     ret
 
-; queue_size(queue* q) -> int
+; queue_size(queue* this) -> int
 queue_size:
     push ebp
     mov ebp, esp
 
-    ; return q->size;
+    ; return this->size;
     mov edx, [ebp+8]
     mov eax, [edx+8]
 
     leave
     ret
 
-; queue_empty(queue* q) -> bool
+; queue_empty(queue* this) -> bool
 queue_empty:
     push ebp
     mov ebp, esp
 
-    ; return q->size == 0;
+    ; return this->size == 0;
     mov edx, [ebp+8]
     cmp dword [edx+8], 0
 
