@@ -17,25 +17,24 @@
 ## How to use
 Copy the entire source from the file and paste it into your code. The `extern` part indicates the dependency functions required by the implementation. If there are `global` directives, ensure to utilize the functions associated with those directives; functions not designated as `global` in this case should be considered private. If there are no `global` directives, all functions will be considered public.
 
+Here's template of main code.
 ```nasm
+; Declare global variables required by some functions.
+section .data
+    ...
+
+section .text
 ; Do not use the global directive for functions, as it is only intended to mark them as public.
 ; Example: global func (do not use this)
 
 ; Declare the main function as global
-global main
+    global main
 
 ; Declare extern functions required by the copied code from the repository
-extern ...
+    extern ...
+
 ; Additional extern dependencies
-extern ...
-
-; Declare global variables required by some functions.
-section .data
-    var1: dd 0
-    str1: db "Hello, World!", 0
-
-; Text section directive. This appears when file has data section variables.
-section .text
+    extern ...
 
 ; Add any required functions from the copied code here
 dependency_func:
