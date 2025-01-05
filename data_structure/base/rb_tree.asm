@@ -1,5 +1,6 @@
 global rb_tree_init
 global rb_tree_deinit
+global rb_tree_clear
 global rb_tree_find
 global rb_tree_insert
 global rb_tree_erase
@@ -173,6 +174,32 @@ rb_tree_deinit:
     call free
     add esp, 16
     call free
+    add esp, 16
+
+    mov ecx, [ebp-4]
+    leave
+    lea esp, [ecx-4]
+    ret
+
+; rb_tree_clear(rb_tree* this)
+rb_tree_clear:
+    lea ecx, [esp+4]
+    and esp, -16
+    push dword [ecx-4]
+    push ebp
+    mov ebp, esp
+    push ecx
+    sub esp, 4
+
+    ; this->size = 0;
+    mov edx, [ecx]
+    mov dword [edx+8], 0
+
+    ; rb_tree_del_node(this, this->root);
+    sub esp, 8
+    push dword [edx]
+    push edx
+    call rb_tree_del_node
     add esp, 16
 
     mov ecx, [ebp-4]
