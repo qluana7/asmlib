@@ -67,11 +67,12 @@ neg edx          ; Get negative of high bits.
 ```assembly
 ; edx:eax = a;
 
-; a == b
+; a == b, a != b
 xor eax, [ebp-16] ; eax will be 0 if high bits are same.
 xor edx, [ebp-12] ; Same as above.
 or eax, edx       ; ZF will set to 1 if low and high bits are same.
 jz equal          ; branch if equal
+jnz not_equal     ; branch if not equal
 
 ; a < b, a >= b
 cmp eax, [ebp-16] ; Compare low bits first..
