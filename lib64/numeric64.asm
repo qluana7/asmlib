@@ -1,6 +1,6 @@
-extern mul_64  ; asmlib/lib64/math64.asm
-extern div_u64 ; asmlib/lib64/math64.asm
-extern mod_u64 ; asmlib/lib64/math64.asm
+extern mul_64  ; asmlib/lib64/arithmetic64.asm
+extern div_u64 ; asmlib/lib64/arithmetic64.asm
+extern mod_u64 ; asmlib/lib64/arithmetic64.asm
 
 global gcd_u64
 global lcm_u64
