@@ -8,6 +8,11 @@ using namespace std;
 constexpr inline u32 __abs(i32 d)
 { return d ^ (d >> 31) - (d >> 31); }
 
+/*
+    Hacker's Delight : Chapter 10. Integer Division By Constants
+        FIGURE 10–1. Computing the magic number for signed division
+        FIGURE 10–2. Computing the magic number for unsigned division
+*/
 pair<pair<i32, u32>, bool> get_magic_i32(i32 d) {
     constexpr u32 mg = 0x80000000;
     i32 p = 31;
