@@ -70,3 +70,25 @@ pair<pair<i32, u32>, bool> get_magic_u32(u32 d) {
 
     return { { q2 + 1, p - 32 }, complex };
 }
+
+/*
+[[ noreturn ]] void usage(const char* pname) {
+    cout << "Usage: " << pname << " <mode> <number>\n\t- mode : [signed, unsigned]";
+    exit(1);
+}
+
+int main(int argc, char** argv) {
+    if (argc < 3) usage(argv[0]);
+
+    string mode = argv[1];
+
+    int m = (mode == "signed" ? 1 : 0) | (mode == "unsigned" ? 2 : 0);
+    if (!m) usage(argv[0]);
+
+    int n = atoi(argv[2]);
+
+    auto [p, k] = (m == 1 ? get_magic_i32(n) : get_magic_u32(n));
+    auto [a, b] = p;
+    cout << a << " (0x" << hex << a << ") " << dec << b << " (Complex: " << (k ? "Yes" : "No") << ")";
+}
+*/
